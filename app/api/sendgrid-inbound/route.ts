@@ -1,15 +1,23 @@
 // app/api/sendgrid-inbound/route.ts
 export const runtime = 'nodejs';
 
-export async function GET() {
-  return new Response('sendgrid-inbound endpoint is alive', { status: 200 });
-}
-
 export async function POST(request: Request) {
-  console.log('Hit /api/sendgrid-inbound');
+  const form = await request.formData();
 
-  const bodyText = await request.text();
-  console.log('Body snippet:', bodyText.slice(0, 200));
+  const keys: string[] = [];
+  for (const [key, value] of form.entries()) {
+    keys.push(key);
+    if (typeof value === 'string') {
+      console.log(`[field] ${key}=${value.slice(0, 200)}`);
+    } else {
+      console.log(
+        `[file] ${key} name=${value.name} type=${value.type} size=${value.size}`
+      );
+    }
+  }
+
+  console.log('All form keys:', keys);
 
   return new Response('OK', { status: 200 });
 }
+
